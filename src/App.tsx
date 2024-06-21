@@ -1,10 +1,11 @@
 import 'react-native-gesture-handler';
 import React, {useEffect} from 'react';
+import {SafeAreaView, StyleSheet, StatusBar} from 'react-native';
 import {NavigationContainer, useNavigationContainerRef} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionPresets, CardStyleInterpolators} from '@react-navigation/stack';
 import {Provider} from 'react-redux';
 import store from './store';
+import Header from '@/layout/Header';
 import PageHome from './page/Home';
 import PageList from './page/List';
 import PageOption from './page/Option';
@@ -25,14 +26,25 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
-          <Stack.Screen name="Home" component={PageHome} />
-          <Stack.Screen name="List" component={PageList} />
-          <Stack.Screen name="Option" component={PageOption} />
-        </Stack.Navigator>
+        <SafeAreaView style={styles.container}>
+          <StatusBar backgroundColor="#f0f0f0" barStyle="dark-content" />
+          <Header />
+          <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false, ...CardStyleInterpolators.forHorizontalIOS}}>
+            <Stack.Screen name="Home" component={PageHome} />
+            <Stack.Screen name="List" component={PageList} />
+            <Stack.Screen name="Option" component={PageOption} />
+          </Stack.Navigator>
+        </SafeAreaView>
       </NavigationContainer>
     </Provider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF', // 최 외곽 컨테이너 배경
+  },
+});
 
 export default App;

@@ -1,15 +1,14 @@
 import React from 'react';
-import {View, Button, StyleSheet} from 'react-native';
-import {useNavigation, NavigationProp} from '@react-navigation/native';
+import {View, Button, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {useNavigation, NavigationProp, useRoute, RouteProp} from '@react-navigation/native';
 
 const Header: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   type RootStackParamList = {
     Home: undefined;
     List: undefined;
     Option: undefined;
   };
-
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <View style={styles.header}>

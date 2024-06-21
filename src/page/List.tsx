@@ -4,7 +4,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {increment, decrement} from '@/store/counter';
 import {StoreState} from '@/store';
-import Header from '@/layout/Header';
 
 const List: React.FC = () => {
   const dispatch = useDispatch();
@@ -12,9 +11,8 @@ const List: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
       <View style={styles.body}>
-        <Text style={styles.text}>Home Screen</Text>
+        <Text style={styles.text}>List Screen</Text>
         <Text style={styles.text}>{count}</Text>
         <Button title="Increment" onPress={() => dispatch(increment())} />
         <Button title="Decrement" onPress={() => dispatch(decrement())} />
