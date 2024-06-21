@@ -1,9 +1,11 @@
 import {configureStore, combineReducers} from '@reduxjs/toolkit';
-import counterSlice from './counter';
+import router from './router';
+import counter from './counter';
 
 const store = configureStore({
   reducer: combineReducers({
-    counter: counterSlice.reducer,
+    router: router.reducer,
+    counter: counter.reducer,
   }),
 });
 

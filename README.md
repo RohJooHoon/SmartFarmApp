@@ -16,6 +16,9 @@ npm start
 
 # OR using Yarn
 yarn start
+
+# remove cache
+yarn start --reset-cache
 ```
 
 ## Step 2: Start your Application
