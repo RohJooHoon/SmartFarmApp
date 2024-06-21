@@ -1,4 +1,4 @@
-import {createSlice, combineReducers} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 // Counter slice
 const counterSlice = createSlice({
@@ -11,12 +11,4 @@ const counterSlice = createSlice({
 });
 
 export const {increment, decrement} = counterSlice.actions;
-
-// Root reducer
-const rootReducer = combineReducers({
-  counter: counterSlice.reducer,
-});
-
-export type RootState = ReturnType<typeof rootReducer>;
-
-export default rootReducer;
+export default counterSlice;

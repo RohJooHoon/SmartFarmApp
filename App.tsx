@@ -1,13 +1,16 @@
 import React from 'react';
-import { Provider, useDispatch, useSelector } from 'react-redux';
+import {Provider, useDispatch, useSelector} from 'react-redux';
+import {SafeAreaView, Text, Button} from 'react-native';
 import store from './src/store';
-import { SafeAreaView, Text, Button } from 'react-native';
-import { RootState } from './src/store/slices';
-import { increment, decrement } from './src/store/slices';
+
+// counter 값 로드
+import {StoreState} from './src/store';
+import {increment, decrement} from './src/store/counter';
+
 
 const App = () => {
   const dispatch = useDispatch();
-  const count = useSelector((state: RootState) => state.counter);
+  const count = useSelector((state: StoreState) => state.counter);
 
   return (
     <SafeAreaView>
