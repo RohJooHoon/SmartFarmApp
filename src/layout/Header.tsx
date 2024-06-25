@@ -8,6 +8,7 @@ const Header: React.FC = () => {
     Home: undefined;
     List: undefined;
     Option: undefined;
+    Bluetooth: undefined;
   };
 
   return (
@@ -15,6 +16,7 @@ const Header: React.FC = () => {
       <Button title="Home" onPress={() => navigation.navigate('Home')} />
       <Button title="List" onPress={() => navigation.navigate('List')} />
       <Button title="Option" onPress={() => navigation.navigate('Option')} />
+      <Button title="Bluetooth" onPress={() => navigation.navigate('Bluetooth')} />
     </View>
   );
 };

@@ -9,6 +9,7 @@ import Header from '@/layout/Header';
 import PageHome from './page/Home';
 import PageList from './page/List';
 import PageOption from './page/Option';
+import PageBluetooth from './page/Bluetooth';
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ const App: React.FC = () => {
             <Stack.Screen name="Home" component={PageHome} />
             <Stack.Screen name="List" component={PageList} />
             <Stack.Screen name="Option" component={PageOption} />
+            <Stack.Screen name="Bluetooth" component={PageBluetooth} />
           </Stack.Navigator>
         </SafeAreaView>
       </NavigationContainer>
