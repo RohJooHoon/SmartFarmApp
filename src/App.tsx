@@ -1,8 +1,9 @@
 import 'react-native-gesture-handler';
+import 'react-native-devsettings';
 import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, StatusBar} from 'react-native';
 import {NavigationContainer, useNavigationContainerRef} from '@react-navigation/native';
-import {createStackNavigator, TransitionPresets, CardStyleInterpolators} from '@react-navigation/stack';
+import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import {Provider} from 'react-redux';
 import store from './store';
 import Header from '@/layout/Header';
