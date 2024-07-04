@@ -1,7 +1,8 @@
 import 'react-native-gesture-handler';
 import 'react-native-devsettings';
 import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet, StatusBar, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {NavigationContainer, useNavigationContainerRef} from '@react-navigation/native';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import {Provider} from 'react-redux';
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <NavigationContainer ref={navigationRef}>
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
           <StatusBar backgroundColor="#f0f0f0" barStyle="dark-content" />
           <Stack.Navigator
             initialRouteName="Home"
@@ -87,8 +88,10 @@ const App: React.FC = () => {
               }}
             />
           </Stack.Navigator>
-          <Navigation />
         </SafeAreaView>
+        <View style={styles.navigation}>
+          <Navigation />
+        </View>
       </NavigationContainer>
     </Provider>
   );
@@ -98,6 +101,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF', // 최 외곽 컨테이너 배경
+  },
+  navigation: {
   },
 });
 

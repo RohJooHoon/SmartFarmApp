@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 10,
+    paddingBottom: 30,
     backgroundColor: '#f8f8f8',
   },
   button: {
