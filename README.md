@@ -6,7 +6,12 @@ node -v : <kbd>v22.3.0</kbd>
 
 ## 실행
 
-1. [Chocolatey](https://chocolatey.org/install)(Window) or [brew](https://brew.sh/ko/)(mac), [Xcode](https://developer.apple.com/kr/xcode/)(mac), [Android Studio](https://developer.android.com/studio/?gclid=Cj0KCQiAjJOQBhCkARIsAEKMtO3zEhdK4_I0CEZic3UH4dl-9gVXuHFR9dCl3TOHKjmv3xWLU3UxfhYaApfAEALw_wcB&gclsrc=aw.ds&hl=ko), [node](https://nodejs.org/en/download/package-manager) 가 설치 되어 있는지 확인 합니다.
+1. [Chocolatey](https://chocolatey.org/install)(Window) or [brew](https://brew.sh/ko/)(mac), [Xcode](https://developer.apple.com/kr/xcode/)(mac), [Android Studio](https://developer.android.com/studio/?gclid=Cj0KCQiAjJOQBhCkARIsAEKMtO3zEhdK4_I0CEZic3UH4dl-9gVXuHFR9dCl3TOHKjmv3xWLU3UxfhYaApfAEALw_wcB&gclsrc=aw.ds&hl=ko), [node](https://nodejs.org/en/download/package-manager), brew install ios-deploy 가 설치 되어 있는지 확인 합니다.
+
+   ```bash
+   # 글로벌 의존성 요소 리스트
+   brew install ios-deploy
+   ```
 
 2. React Native 프로젝트의 루트에서 새로운 터미널을 열고 다음 명령어를 실행하여 **Android** 또는 **iOS** 앱을 시작하세요.
 
@@ -50,3 +55,7 @@ cd ./ios
 pod install
 cd ../
 ```
+
+## Material icon
+
+[Material icon 사용법](https://biio-studying.tistory.com/253)
