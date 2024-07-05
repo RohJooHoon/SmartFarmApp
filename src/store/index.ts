@@ -1,10 +1,8 @@
 import {configureStore, combineReducers} from '@reduxjs/toolkit';
-import router from './router';
 import counter from './counter';
 
 const store = configureStore({
   reducer: combineReducers({
-    router: router.reducer,
     counter: counter.reducer,
   }),
 });

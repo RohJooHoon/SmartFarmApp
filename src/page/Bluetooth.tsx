@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, Button, TextInput, NativeEventEmitter, NativeModules, Platform, PermissionsAndroid, FlatList, StyleSheet} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import BleManager from 'react-native-ble-manager';
 import {Buffer} from 'buffer';
 
@@ -129,44 +128,39 @@ const Bluetooth: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.body}>
-        {!connectedDevice && (
-          <View>
-            <Button title="Start Scan" onPress={startScan} />
-            {isScanning && <Text>Scanning...</Text>}
-            <FlatList
-              data={devices}
-              keyExtractor={(item) => item.id}
-              renderItem={({item}) => (
-                <View>
-                  <Text>{item.name || 'Unnamed Device'}</Text>
-                  <Text>ID: {item.id}</Text>
-                  <Text>RSSI: {item.rssi}</Text>
-                  <Button title="Connect" onPress={() => connectDevice(item)} />
-                </View>
-              )}
-            />
-          </View>
-        )}
-        {connectedDevice && (
-          <View>
-            <Text>Connected to {connectedDevice.name || connectedDevice.id}</Text>
-            <Text>Data: {data}</Text>
-            <TextInput placeholder="Enter data to send" value={inputValue} onChangeText={setInputValue} />
-            <Button title="Send Data" onPress={sendData} />
-            <Button title="Disconnect" onPress={disconnectDevice} />
-          </View>
-        )}
-      </View>
-    </SafeAreaView>
+    <View style={styles.body}>
+      {!connectedDevice && (
+        <View>
+          <Button title="Start Scan" onPress={startScan} />
+          {isScanning && <Text>Scanning...</Text>}
+          <FlatList
+            data={devices}
+            keyExtractor={(item) => item.id}
+            renderItem={({item}) => (
+              <View>
+                <Text>{item.name || 'Unnamed Device'}</Text>
+                <Text>ID: {item.id}</Text>
+                <Text>RSSI: {item.rssi}</Text>
+                <Button title="Connect" onPress={() => connectDevice(item)} />
+              </View>
+            )}
+          />
+        </View>
+      )}
+      {connectedDevice && (
+        <View>
+          <Text>Connected to {connectedDevice.name || connectedDevice.id}</Text>
+          <Text>Data: {data}</Text>
+          <TextInput placeholder="Enter data to send" value={inputValue} onChangeText={setInputValue} />
+          <Button title="Send Data" onPress={sendData} />
+          <Button title="Disconnect" onPress={disconnectDevice} />
+        </View>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   body: {
     flex: 1,
     justifyContent: 'center',
