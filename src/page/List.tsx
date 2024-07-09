@@ -9,7 +9,7 @@ const List: React.FC = () => {
   const count = useSelector((state: StoreState) => state.counter);
 
   return (
-    <View style={styles.body}>
+    <View style={styles.container}>
       <Text style={styles.text}>List Screen</Text>
       <Text style={styles.text}>{count}</Text>
       <Button title="Increment" onPress={() => dispatch(increment())} />
@@ -19,7 +19,7 @@ const List: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  body: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

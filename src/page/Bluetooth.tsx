@@ -1,7 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, Button, TextInput, NativeEventEmitter, NativeModules, Platform, PermissionsAndroid, FlatList, StyleSheet} from 'react-native';
 import BleManager from 'react-native-ble-manager';
+import {View, Button, Text, TextInput, FlatList, StyleSheet, NativeModules, NativeEventEmitter, Platform, PermissionsAndroid} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {StoreState} from '@/store';
+import {setScanning, setScannedDevices, setConnectedDevice, setConnectedData, setInputValue} from '@/store/bluetooth';
+import {useEffect} from 'react';
 import {Buffer} from 'buffer';
+import _ from 'lodash';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
@@ -10,38 +14,32 @@ const SERVICE_UUID = 'FFE0';
 const CHARACTERISTIC_UUID = 'FFE1';
 
 const Bluetooth: React.FC = () => {
-  const [isScanning, setIsScanning] = useState(false);
-  const [devices, setDevices] = useState<any[]>([]);
-  const [connectedDevice, setConnectedDevice] = useState<any>(null);
-  const [data, setData] = useState<string | null>(null);
-  const [inputValue, setInputValue] = useState<string>('');
+  const dispatch = useDispatch();
+  const bluetoothState = useSelector((state: StoreState) => state.bluetooth);
 
   useEffect(() => {
     const startBleManager = async () => {
       if (Platform.OS === 'android' && Platform.Version >= 23) {
         await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
       }
-      BleManager.start({showAlert: false});
+      BleManager.start({showAlert: false, restoreIdentifierKey: 'BleManagerRestore'});
     };
 
     startBleManager();
 
     const handleDiscoverPeripheral = (peripheral: any) => {
-      console.log('Discovered peripheral:', peripheral);
-      setDevices((prevDevices) => {
-        const updatedDevices = [...prevDevices, peripheral];
-        return removeDuplicateDevices(updatedDevices);
-      });
+      const prevScannedDevices = _.cloneDeep(bluetoothState.scannedDevices);
+      const updatedDevices = [...prevScannedDevices, peripheral];
+      const uniqueDevices = removeDuplicateDevices(updatedDevices);
+      dispatch(setScannedDevices(uniqueDevices));
     };
 
     const handleStopScan = () => {
-      console.log('Scan stopped');
-      setIsScanning(false);
+      dispatch(setScanning(false));
     };
 
     const handleUpdateValueForCharacteristic = (data: any) => {
-      console.log('Received data from peripheral:', data);
-      setData(data.value);
+      dispatch(setConnectedData(data.value));
     };
 
     bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
@@ -53,7 +51,7 @@ const Bluetooth: React.FC = () => {
       bleManagerEmitter.removeAllListeners('BleManagerStopScan');
       bleManagerEmitter.removeAllListeners('BleManagerDidUpdateValueForCharacteristic');
     };
-  }, []);
+  }, [dispatch, bluetoothState.scannedDevices]);
 
   const removeDuplicateDevices = (devices: any[]) => {
     const uniqueDevices = devices.filter((device, index, self) => index === self.findIndex((d) => d.id === device.id));
@@ -61,9 +59,9 @@ const Bluetooth: React.FC = () => {
   };
 
   const startScan = () => {
-    if (!isScanning) {
-      setDevices([]);
-      setIsScanning(true);
+    if (!bluetoothState.scanning) {
+      dispatch(setScannedDevices([]));
+      dispatch(setScanning(true));
       BleManager.scan([], 5, true).then(() => {
         console.log('Scanning...');
       });
@@ -73,24 +71,16 @@ const Bluetooth: React.FC = () => {
   const connectDevice = (device: any) => {
     BleManager.connect(device.id)
       .then(() => {
-        console.log('Connected to', device.id);
-        setConnectedDevice(device);
+        dispatch(setConnectedDevice(device));
 
         BleManager.retrieveServices(device.id).then((peripheralInfo) => {
-          console.log('Peripheral info:', peripheralInfo);
-
-          BleManager.startNotification(device.id, SERVICE_UUID, CHARACTERISTIC_UUID)
-            .then(() => {
-              console.log('Started notification on', device.id);
-            })
-            .catch((error) => {
-              console.log('Notification error', error);
-            });
+          BleManager.startNotification(device.id, SERVICE_UUID, CHARACTERISTIC_UUID).catch((error) => {
+            console.log('Notification error', error);
+          });
         });
 
         BleManager.stopScan().then(() => {
-          console.log('Stopped scanning');
-          setIsScanning(false);
+          dispatch(setScanning(false));
         });
       })
       .catch((error) => {
@@ -99,12 +89,11 @@ const Bluetooth: React.FC = () => {
   };
 
   const disconnectDevice = () => {
-    if (connectedDevice) {
-      BleManager.disconnect(connectedDevice.id)
+    if (bluetoothState.connectedDevice) {
+      BleManager.disconnect(bluetoothState.connectedDevice.id)
         .then(() => {
-          console.log('Disconnected from', connectedDevice.id);
-          setConnectedDevice(null);
-          setData(null);
+          dispatch(setConnectedDevice(null));
+          dispatch(setConnectedData(null));
           startScan();
         })
         .catch((error) => {
@@ -114,28 +103,23 @@ const Bluetooth: React.FC = () => {
   };
 
   const sendData = () => {
-    if (connectedDevice) {
-      const buffer = Buffer.from(inputValue, 'utf-8');
-      console.log('Sending data:', inputValue);
-      BleManager.write(connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID, Array.from(buffer))
-        .then(() => {
-          console.log('Sent data to', connectedDevice.id);
-        })
-        .catch((error) => {
-          console.log('Write error', error);
-        });
+    if (bluetoothState.connectedDevice) {
+      const buffer = Buffer.from(bluetoothState.inputValue, 'utf-8');
+      BleManager.write(bluetoothState.connectedDevice.id, SERVICE_UUID, CHARACTERISTIC_UUID, Array.from(buffer)).catch((error) => {
+        console.log('Write error', error);
+      });
     }
   };
 
   return (
-    <View style={styles.body}>
-      {!connectedDevice && (
+    <View style={styles.container}>
+      {!bluetoothState.connectedDevice && (
         <View>
           <Button title="Start Scan" onPress={startScan} />
-          {isScanning && <Text>Scanning...</Text>}
+          {bluetoothState.scanning && <Text>Scanning...</Text>}
           <FlatList
-            data={devices}
-            keyExtractor={(item) => item.id}
+            data={bluetoothState.scannedDevices}
+            keyExtractor={(item) => item.id || item.advertising.localName || Math.random().toString()}
             renderItem={({item}) => (
               <View>
                 <Text>{item.name || 'Unnamed Device'}</Text>
@@ -147,11 +131,11 @@ const Bluetooth: React.FC = () => {
           />
         </View>
       )}
-      {connectedDevice && (
+      {bluetoothState.connectedDevice && (
         <View>
-          <Text>Connected to {connectedDevice.name || connectedDevice.id}</Text>
-          <Text>Data: {data}</Text>
-          <TextInput placeholder="Enter data to send" value={inputValue} onChangeText={setInputValue} />
+          <Text>Connected to {bluetoothState.connectedDevice.name || bluetoothState.connectedDevice.id}</Text>
+          <Text>Data: {bluetoothState.connectedData}</Text>
+          <TextInput placeholder="Enter data to send" value={bluetoothState.inputValue} onChangeText={(text) => dispatch(setInputValue(text))} />
           <Button title="Send Data" onPress={sendData} />
           <Button title="Disconnect" onPress={disconnectDevice} />
         </View>
@@ -161,7 +145,7 @@ const Bluetooth: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  body: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

@@ -7,6 +7,7 @@ import {NavigationContainer, useNavigationContainerRef} from '@react-navigation/
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import {Provider} from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import BluetoothProvider from '@/component/Bluetooth';
 import store from './store';
 import PageHome from './page/Home';
 import PageList from './page/List';
@@ -102,8 +103,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF', // 최 외곽 컨테이너 배경
   },
-  navigation: {
-  },
+  navigation: {},
 });
 
 export default App;
