@@ -1,15 +1,14 @@
-import React, {useEffect, createContext, useContext} from 'react';
-import {View, ViewStyle, Platform, PermissionsAndroid, NativeEventEmitter, NativeModules} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {StoreState} from '@/store';
-import {setIsScanning, setDevices, setConnectedDevice, setData} from '@/store/bluetooth';
 import BleManager from 'react-native-ble-manager';
+import React, {useEffect, createContext, useContext} from 'react';
+import {Platform, PermissionsAndroid, NativeEventEmitter, NativeModules} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {StoreState, AppDispatch} from '@/store';
+import {setScanning, setScannedDevices, setConnectedDevice, setConnectedData, setInputValue} from '@/store/bluetooth';
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
 interface BluetoothProps {
-  style?: ViewStyle;
   children: React.ReactNode;
 }
 
@@ -30,8 +29,8 @@ export const useBluetooth = () => {
   return context;
 };
 
-const BluetoothProvider: React.FC<BluetoothProps> = ({style, children}) => {
-  const dispatch = useDispatch();
+const BluetoothProvider: React.FC<BluetoothProps> = ({children}) => {
+  const dispatch = useDispatch<AppDispatch>();
   const storeBluetooth = useSelector((state: StoreState) => state.bluetooth);
 
   useEffect(() => {
@@ -39,29 +38,23 @@ const BluetoothProvider: React.FC<BluetoothProps> = ({style, children}) => {
       if (Platform.OS === 'android' && Platform.Version >= 23) {
         await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
       }
-      BleManager.start({showAlert: false});
+      BleManager.start({showAlert: false, restoreIdentifierKey: 'BleManagerRestore'});
     };
 
     startBleManager();
 
     const handleDiscoverPeripheral = (peripheral: any) => {
-      console.log('Discovered peripheral:', peripheral);
-      dispatch(
-        setDevices((prevDevices: any) => {
-          const updatedDevices = [...prevDevices, peripheral];
-          return removeDuplicateDevices(updatedDevices);
-        })
-      );
+      const updatedDevices = [...storeBluetooth.scannedDevices, peripheral];
+      const uniqueDevices = removeDuplicateDevices(updatedDevices);
+      dispatch(setScannedDevices(uniqueDevices));
     };
 
     const handleStopScan = () => {
-      console.log('Scan stopped');
-      dispatch(setIsScanning(false));
+      dispatch(setScanning(false));
     };
 
     const handleUpdateValueForCharacteristic = (data: any) => {
-      console.log('Received data from peripheral:', data);
-      dispatch(setData(data.value));
+      dispatch(setConnectedData(data.value));
     };
 
     bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
@@ -73,7 +66,7 @@ const BluetoothProvider: React.FC<BluetoothProps> = ({style, children}) => {
       bleManagerEmitter.removeAllListeners('BleManagerStopScan');
       bleManagerEmitter.removeAllListeners('BleManagerDidUpdateValueForCharacteristic');
     };
-  }, [dispatch]);
+  }, [dispatch, storeBluetooth.scannedDevices]);
 
   const removeDuplicateDevices = (devices: any[]) => {
     const uniqueDevices = devices.filter((device, index, self) => index === self.findIndex((d) => d.id === device.id));
@@ -81,9 +74,9 @@ const BluetoothProvider: React.FC<BluetoothProps> = ({style, children}) => {
   };
 
   const startScan = () => {
-    if (!storeBluetooth.isScanning) {
-      dispatch(setDevices([]));
-      dispatch(setIsScanning(true));
+    if (!storeBluetooth.scanning) {
+      dispatch(setScannedDevices([]));
+      dispatch(setScanning(true));
       BleManager.scan([], 5, true).then(() => {
         console.log('Scanning...');
       });
@@ -93,24 +86,16 @@ const BluetoothProvider: React.FC<BluetoothProps> = ({style, children}) => {
   const connectDevice = (device: any) => {
     BleManager.connect(device.id)
       .then(() => {
-        console.log('Connected to', device.id);
         dispatch(setConnectedDevice(device));
 
         BleManager.retrieveServices(device.id).then((peripheralInfo) => {
-          console.log('Peripheral info:', peripheralInfo);
-
-          BleManager.startNotification(device.id, storeBluetooth.SERVICE_UUID, storeBluetooth.CHARACTERISTIC_UUID)
-            .then(() => {
-              console.log('Started notification on', device.id);
-            })
-            .catch((error) => {
-              console.log('Notification error', error);
-            });
+          BleManager.startNotification(device.id, storeBluetooth.SERVICE_UUID, storeBluetooth.CHARACTERISTIC_UUID).catch((error) => {
+            console.log('Notification error', error);
+          });
         });
 
         BleManager.stopScan().then(() => {
-          console.log('Stopped scanning');
-          dispatch(setIsScanning(false));
+          dispatch(setScanning(false));
         });
       })
       .catch((error) => {
@@ -122,9 +107,8 @@ const BluetoothProvider: React.FC<BluetoothProps> = ({style, children}) => {
     if (storeBluetooth.connectedDevice) {
       BleManager.disconnect(storeBluetooth.connectedDevice.id)
         .then(() => {
-          console.log('Disconnected from', storeBluetooth.connectedDevice.id);
           dispatch(setConnectedDevice(null));
-          dispatch(setData(null));
+          dispatch(setConnectedData(null));
           startScan();
         })
         .catch((error) => {
@@ -133,25 +117,16 @@ const BluetoothProvider: React.FC<BluetoothProps> = ({style, children}) => {
     }
   };
 
-  const sendData = (inputValue: string) => {
+  const sendData = () => {
     if (storeBluetooth.connectedDevice) {
-      const buffer = Buffer.from(inputValue, 'utf-8');
-      console.log('Sending data:', inputValue);
-      BleManager.write(storeBluetooth.connectedDevice.id, storeBluetooth.SERVICE_UUID, storeBluetooth.CHARACTERISTIC_UUID, Array.from(buffer))
-        .then(() => {
-          console.log('Sent data to', storeBluetooth.connectedDevice.id);
-        })
-        .catch((error) => {
-          console.log('Write error', error);
-        });
+      const buffer = Buffer.from(storeBluetooth.inputValue, 'utf-8');
+      BleManager.write(storeBluetooth.connectedDevice.id, storeBluetooth.SERVICE_UUID, storeBluetooth.CHARACTERISTIC_UUID, Array.from(buffer)).catch((error) => {
+        console.log('Write error', error);
+      });
     }
   };
 
-  return (
-    <BluetoothContext.Provider value={{startScan, connectDevice, disconnectDevice, sendData}}>
-      <View style={style}>{children}</View>
-    </BluetoothContext.Provider>
-  );
+  return <BluetoothContext.Provider value={{startScan, connectDevice, disconnectDevice, sendData}}>{children}</BluetoothContext.Provider>;
 };
 
 export default BluetoothProvider;

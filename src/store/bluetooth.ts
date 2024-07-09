@@ -1,8 +1,9 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-// Define a type for the slice state
 export interface BluetoothState {
+  SERVICE_UUID: string;
+  CHARACTERISTIC_UUID: string;
   scanning: boolean;
   scannedDevices: any[];
   connectedDevice: any;
@@ -10,8 +11,9 @@ export interface BluetoothState {
   inputValue: string;
 }
 
-// Define the initial state using that type
 const initialState: BluetoothState = {
+  SERVICE_UUID: 'FFE0',
+  CHARACTERISTIC_UUID: 'FFE1',
   scanning: false,
   scannedDevices: [],
   connectedDevice: null,

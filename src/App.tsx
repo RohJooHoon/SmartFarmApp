@@ -30,70 +30,72 @@ const App: React.FC = () => {
 
   return (
     <Provider store={store}>
-      <NavigationContainer ref={navigationRef}>
-        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-          <StatusBar backgroundColor="#f0f0f0" barStyle="dark-content" />
-          <Stack.Navigator
-            initialRouteName="Home"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: '#fff', // 헤더 배경색
-              },
-              headerTintColor: '#333', // 헤더 텍스트 색상
-              headerTitleStyle: {
-                fontWeight: 'bold', // 헤더 텍스트 스타일
-              },
-              headerTitleAlign: 'center',
-              headerBackTitleVisible: true,
-              headerBackTitle: ' ',
-              headerBackImage: () => {
-                const style = {
-                  marginRight: 5,
-                  marginLeft: 11,
-                };
-                return <MaterialCommunityIcons name="arrow-left" size={26} color="#333" style={style} />;
-              },
-              ...CardStyleInterpolators.forHorizontalIOS,
-            }}>
-            <Stack.Screen
-              name="Home"
-              component={PageHome}
-              options={{
-                title: 'HOME',
-                headerRight: () => (
-                  <TouchableOpacity onPress={() => console.log('This is a button!')} style={{marginRight: 10}}>
-                    <Text>test</Text>
-                  </TouchableOpacity>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="List"
-              component={PageList}
-              options={{
-                title: 'LIST',
-              }}
-            />
-            <Stack.Screen
-              name="Option"
-              component={PageOption}
-              options={{
-                title: 'OPTION',
-              }}
-            />
-            <Stack.Screen
-              name="Bluetooth"
-              component={PageBluetooth}
-              options={{
-                title: 'BLUETOOTH',
-              }}
-            />
-          </Stack.Navigator>
-        </SafeAreaView>
-        <View style={styles.navigation}>
-          <Navigation />
-        </View>
-      </NavigationContainer>
+      <BluetoothProvider>
+        <NavigationContainer ref={navigationRef}>
+          <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+            <StatusBar backgroundColor="#f0f0f0" barStyle="dark-content" />
+            <Stack.Navigator
+              initialRouteName="Home"
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: '#fff', // 헤더 배경색
+                },
+                headerTintColor: '#333', // 헤더 텍스트 색상
+                headerTitleStyle: {
+                  fontWeight: 'bold', // 헤더 텍스트 스타일
+                },
+                headerTitleAlign: 'center',
+                headerBackTitleVisible: true,
+                headerBackTitle: ' ',
+                headerBackImage: () => {
+                  const style = {
+                    marginRight: 5,
+                    marginLeft: 11,
+                  };
+                  return <MaterialCommunityIcons name="arrow-left" size={26} color="#333" style={style} />;
+                },
+                ...CardStyleInterpolators.forHorizontalIOS,
+              }}>
+              <Stack.Screen
+                name="Home"
+                component={PageHome}
+                options={{
+                  title: 'HOME',
+                  headerRight: () => (
+                    <TouchableOpacity onPress={() => console.log('This is a button!')} style={{marginRight: 10}}>
+                      <Text>test</Text>
+                    </TouchableOpacity>
+                  ),
+                }}
+              />
+              <Stack.Screen
+                name="List"
+                component={PageList}
+                options={{
+                  title: 'LIST',
+                }}
+              />
+              <Stack.Screen
+                name="Option"
+                component={PageOption}
+                options={{
+                  title: 'OPTION',
+                }}
+              />
+              <Stack.Screen
+                name="Bluetooth"
+                component={PageBluetooth}
+                options={{
+                  title: 'BLUETOOTH',
+                }}
+              />
+            </Stack.Navigator>
+          </SafeAreaView>
+          <View style={styles.navigation}>
+            <Navigation />
+          </View>
+        </NavigationContainer>
+      </BluetoothProvider>
     </Provider>
   );
 };
