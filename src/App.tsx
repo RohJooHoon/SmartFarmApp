@@ -1,19 +1,18 @@
 import 'react-native-gesture-handler';
 import 'react-native-devsettings';
 import React, {useEffect} from 'react';
-import {StyleSheet, StatusBar, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, StatusBar, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NavigationContainer, useNavigationContainerRef} from '@react-navigation/native';
 import {createStackNavigator, CardStyleInterpolators} from '@react-navigation/stack';
 import {Provider} from 'react-redux';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BluetoothProvider from '@/component/Bluetooth';
 import store from './store';
 import PageHome from './page/Home';
-import PageList from './page/List';
+import PageDetail from './page/Detail';
 import PageOption from './page/Option';
 import PageBluetooth from './page/Bluetooth';
-import Navigation from '@/component/Navigation';
 
 const Stack = createStackNavigator();
 
@@ -32,15 +31,18 @@ const App: React.FC = () => {
     <Provider store={store}>
       <BluetoothProvider>
         <NavigationContainer ref={navigationRef}>
-          <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-            <StatusBar backgroundColor="#f0f0f0" barStyle="dark-content" />
+          <SafeAreaView style={styles.wrapper} edges={['top', 'left', 'right']}>
+            <StatusBar backgroundColor="#101811" barStyle="light-content" />
             <Stack.Navigator
-              initialRouteName="Home"
+              initialRouteName="CubeBrio"
               screenOptions={{
                 headerStyle: {
-                  backgroundColor: '#fff', // 헤더 배경색
+                  backgroundColor: '#101811', // 헤더 배경색
+                  borderBottomWidth: 0, // 하단 라인을 없앱니다.
+                  elevation: 0, // 안드로이드에서 그림자를 없앱니다.
+                  shadowOpacity: 0, // iOS에서 그림자를 없앱니다.
                 },
-                headerTintColor: '#333', // 헤더 텍스트 색상
+                headerTintColor: '#FFFFFF', // 헤더 텍스트 색상
                 headerTitleStyle: {
                   fontWeight: 'bold', // 헤더 텍스트 스타일
                 },
@@ -52,27 +54,27 @@ const App: React.FC = () => {
                     marginRight: 5,
                     marginLeft: 11,
                   };
-                  return <MaterialCommunityIcons name="arrow-left" size={26} color="#333" style={style} />;
+                  return <MaterialIcons name="keyboard-arrow-left" size={26} color="#FFFFFF" style={style} />;
                 },
                 ...CardStyleInterpolators.forHorizontalIOS,
               }}>
               <Stack.Screen
-                name="Home"
+                name="CubeBrio"
                 component={PageHome}
                 options={{
-                  title: 'HOME',
+                  title: 'CubeBrio',
                   headerRight: () => (
-                    <TouchableOpacity onPress={() => console.log('This is a button!')} style={{marginRight: 10}}>
-                      <Text>test</Text>
+                    <TouchableOpacity style={styles.button}>
+                      <MaterialIcons name="refresh" size={26} style={styles.buttonIcon} />
                     </TouchableOpacity>
                   ),
                 }}
               />
               <Stack.Screen
-                name="List"
-                component={PageList}
+                name="Detail"
+                component={PageDetail}
                 options={{
-                  title: 'LIST',
+                  title: 'Detail',
                 }}
               />
               <Stack.Screen
@@ -91,9 +93,6 @@ const App: React.FC = () => {
               />
             </Stack.Navigator>
           </SafeAreaView>
-          <View style={styles.navigation}>
-            <Navigation />
-          </View>
         </NavigationContainer>
       </BluetoothProvider>
     </Provider>
@@ -101,11 +100,23 @@ const App: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // 최 외곽 컨테이너 배경
+    backgroundColor: '#101811',
   },
-  navigation: {},
+  button: {
+    flex: 1,
+    justifyContent: 'center', // 세로 축에서 중앙 정렬
+    alignItems: 'center', // 가로 축에서 중앙 정렬
+    width: 42,
+    height: 42,
+  },
+  buttonIcon: {
+    color: '#FFFFFF',
+  },
+  buttonText: {
+    marginTop: 5,
+  },
 });
 
 export default App;

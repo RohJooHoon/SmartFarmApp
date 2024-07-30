@@ -25,7 +25,7 @@ const Bluetooth: React.FC = () => {
   }, [storeBluetooth.connectedData]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.body}>
       {!storeBluetooth.connectedDevice ? (
         <View>
           <Button title="Start Scan" onPress={startScan} />
@@ -73,7 +73,7 @@ const Bluetooth: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
     padding: 16,
   },

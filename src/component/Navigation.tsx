@@ -5,7 +5,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 type RootStackParamList = {
   Home: undefined;
-  List: undefined;
+  Detail: undefined;
   Option: undefined;
   Bluetooth: undefined;
 };
@@ -19,9 +19,9 @@ const Navigation: React.FC = () => {
         <MaterialIcons name="home" size={24} style={styles.buttonIcon} />
         <Text style={styles.buttonText}>Home</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('List')}>
-        <MaterialIcons name="list" size={24} style={styles.buttonIcon} />
-        <Text style={styles.buttonText}>List</Text>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Detail')}>
+        <MaterialIcons name="detail" size={24} style={styles.buttonIcon} />
+        <Text style={styles.buttonText}>Detail</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Option')}>
         <MaterialIcons name="settings" size={24} style={styles.buttonIcon} />

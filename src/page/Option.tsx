@@ -9,7 +9,7 @@ const Option: React.FC = () => {
   const count = useSelector((state: StoreState) => state.counter);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.body}>
       <Text style={styles.text}>Option Screen</Text>
       <Text style={styles.text}>{count}</Text>
       <Button title="Increment" onPress={() => dispatch(increment())} />
@@ -19,7 +19,7 @@ const Option: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

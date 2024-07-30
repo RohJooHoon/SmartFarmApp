@@ -4,13 +4,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import {increment, decrement} from '@/store/counter';
 import {StoreState} from '@/store';
 
-const List: React.FC = () => {
+const Detail: React.FC = () => {
   const dispatch = useDispatch();
   const count = useSelector((state: StoreState) => state.counter);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>List Screen</Text>
+    <View style={styles.body}>
+      <Text style={styles.text}>Detail Screen</Text>
       <Text style={styles.text}>{count}</Text>
       <Button title="Increment" onPress={() => dispatch(increment())} />
       <Button title="Decrement" onPress={() => dispatch(decrement())} />
@@ -19,7 +19,7 @@ const List: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -30,4 +30,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default List;
+export default Detail;
